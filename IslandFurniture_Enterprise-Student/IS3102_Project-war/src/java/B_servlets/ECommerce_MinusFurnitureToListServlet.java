@@ -24,45 +24,6 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "ECommerce_MinusFurnitureToListServlet", urlPatterns = {"/ECommerce_MinusFurnitureToListServlet"})
 public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
 
-    
-//    protected void processRequest(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException{
-//        response.setContentType("text/html;charset=UTF-8");
-//        PrintWriter out = response.getWriter();
-//        HttpSession ses = request.getSession();
-//        try{
-//            
-//            out.println(ses.getAttribute("shoppingCart"));
-//            
-//             
-//            String SKU = request.getParameter("SKU");
-//            ArrayList<ShoppingCartLineItem>shoppingCart = (ArrayList<ShoppingCartLineItem>)ses.getAttribute("shoppingCart");
-//            
-//            if(shoppingCart == null){
-//                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=You have no items in your shopping cart.");
-//            }
-//            else{
-//                for(ShoppingCartLineItem lineItem : shoppingCart){
-//                   if(lineItem.getSKU().equals(SKU)){
-//                       if(lineItem.getQuantity()>1){
-//                           lineItem.setQuantity(lineItem.getQuantity() - 1);
-//                       }else{
-//                           response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=The quantity cannot be lower than 1.");
-//                           return;
-//                       }
-//                       break;
-//                   }
-//                }
-//            }
-//            
-//            ses.setAttribute("shoppingCart",shoppingCart);
-//            response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?goodMsg="+"Item quantity reduced successfully!");
-//        }catch(Exception ex){
-//            out.println(ex);
-//            ex.printStackTrace();
-//            response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg="+"Item quantity reduced unsuccessfully");
-//        }
-//    }
-
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
