@@ -18,13 +18,13 @@ import javax.servlet.http.HttpSession;
 
 /**
  *
- * @author royst
+ * @author twk77
  */
 @WebServlet(name = "ECommerce_RemoveItemFromListServlet", urlPatterns = {"/ECommerce_RemoveItemFromListServlet"})
 public class ECommerce_RemoveItemFromListServlet extends HttpServlet {
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         
@@ -45,8 +45,9 @@ public class ECommerce_RemoveItemFromListServlet extends HttpServlet {
                 shoppingCart.remove(id);
                 count++;
             }
+            
             ses.setAttribute("shoppingCart",shoppingCart);
-            noti = "Successfully removed:" + count +"record(s)";
+            noti = "Successfully removed: " + count +" record(s)";
             response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?goodMsg="+noti);       
         }catch(Exception ex){
             out.println(ex);

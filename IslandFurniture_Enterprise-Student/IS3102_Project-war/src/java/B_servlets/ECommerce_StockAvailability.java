@@ -24,6 +24,8 @@ public class ECommerce_StockAvailability extends HttpServlet {
             String SKU = request.getParameter("sku");
             String type = request.getParameter("type");
 
+            //Add im category
+            String category = request.getParameter("category");
             //<editor-fold defaultstate="collapsed" desc="check storeID and SKU validity">
             if ((storeIDstring == null || storeIDstring.equals("")) && (SKU == null || SKU.equals(""))) {
                 response.sendRedirect("/IS3102_Project-war/B/SG/index.jsp");
