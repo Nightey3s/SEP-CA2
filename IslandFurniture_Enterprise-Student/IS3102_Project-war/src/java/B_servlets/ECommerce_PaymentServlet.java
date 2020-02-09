@@ -94,34 +94,7 @@ public class ECommerce_PaymentServlet extends HttpServlet {
 
     }
 
-    /*
-    public boolean verifyCard(String cardNumber) {
-        System.out.println(cardNumber.length());
-        int[] creditcardInt = new int[cardNumber.length()];
-        for (int i = 0; i < cardNumber.length(); i++) {
-            creditcardInt[i] = Integer.parseInt(cardNumber.substring(i, i + 1));
-        }
-        for (int i = creditcardInt.length - 2; i >= 0; i = i - 2) {
-            int j = creditcardInt[i];
-            j = j * 2;
-            if (j > 9) {
-                j = j % 10 + 1;
-            }
-            creditcardInt[i] = j;
-        }
-        int sum = 0;
-        for (int i = 0; i < creditcardInt.length; i++) {
-            sum += creditcardInt[i];
-        }
-        if (sum % 10 == 0) {
-            System.out.println(cardNumber + " is a valid credit card number");
-            return true;
-        } else {
-            System.out.println(cardNumber + " is an invalid credit card number");
-            return false;
-        }
-    }
-     */
+    
     public String getCurrency(Long countryCode) {
         try {
             System.out.println("Country shopping in: " + countryCode);

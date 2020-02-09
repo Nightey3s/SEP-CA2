@@ -1,6 +1,7 @@
 package service;
 
 import Entity.Storeentity;
+import dbaccess.StoreDB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -110,32 +111,13 @@ public class StoreentityFacadeREST extends AbstractFacade<Storeentity> {
     @Path("getStoreInfo")
     @Produces({"application/json"})
     public Response getStoreInfo(@QueryParam("storeID") Long storeID) {
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?user=root&password=12345");
-            String stmt = "SELECT * FROM storeentity s WHERE s.id=?";
-            PreparedStatement ps = conn.prepareStatement(stmt);
-            ps.setLong(1, storeID);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next()){
-                String info = "Store Name: ";
-                info += rs.getString("NAME");
-                info += "; Address: ";
-                info += rs.getString("ADDRESS");
-                info += " (";
-                info += rs.getString("POSTALCODE");
-                info += ") ";
-                conn.close();
-                return Response
-                        .status(200)
-                        .entity(info)
-                        .build();
-            }else{
-                return Response.status(Response.Status.BAD_REQUEST).build();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        
+        String info = StoreDB.getStoreInfo(storeID);
+        if (info == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+        return Response.status(Response.Status.OK).entity(info).build();
+        
     }
 
     @Override
