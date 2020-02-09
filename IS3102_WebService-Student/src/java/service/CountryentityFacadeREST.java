@@ -1,7 +1,6 @@
 package service;
 
 import Entity.Countryentity;
-import Entity.ProductDB;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,24 +88,27 @@ public class CountryentityFacadeREST extends AbstractFacade<Countryentity> {
     }
 
     @GET
-    @Path("getQuantity")
+    @Path("getCountry")
     @Produces({"application/json"})
-    public Response getItemQuantity(@QueryParam("storeID") Long storeID, @QueryParam("SKU") String SKU) {
+    public Response listAllCountries(@QueryParam("countrycode") Long countryCode) {
         try {
-            
-            ProductDB product = new ProductDB();
-            Response res = product.checkAvailability(SKU, storeID);
-            if (res.getStatus() == 200) {
-                System.out.println("pass");
-                return Response.ok(MediaType.APPLICATION_JSON).build();
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?user=root&password=12345");
+            String stmt = "SELECT * FROM countryentity c WHERE c.ID=?";
+            PreparedStatement ps = conn.prepareStatement(stmt);
+            ps.setLong(1, countryCode);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String currency = rs.getString("CURRENCY");
+                System.out.println("currency is: " + currency);
+                return Response.status(Response.Status.OK).entity(currency).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).build();
+            System.out.println("Error Message: " + ex.getMessage());
         }
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @Override

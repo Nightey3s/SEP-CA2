@@ -6,13 +6,17 @@
 package Entity;
 
 import java.sql.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.*;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  *
- * @author royst
+ * @author twk77
  */
 public class ProductDB {
 

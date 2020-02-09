@@ -48,6 +48,8 @@ public class ECommerce_GetMember extends HttpServlet {
         Member member = res.readEntity(Member.class);
         if (res.getStatus() == 200) {
                 session.setAttribute("member",member);
+                session.setAttribute("memberName",member.getName());
+                session.setAttribute("memberId",member.getId());
             response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp");
 
         } else {

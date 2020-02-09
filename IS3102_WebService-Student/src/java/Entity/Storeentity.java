@@ -18,6 +18,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -156,6 +162,27 @@ public class Storeentity implements Serializable {
 
     public void setWarehouseId(Warehouseentity warehouseId) {
         this.warehouseId = warehouseId;
+    }
+    
+    @GET
+    @Path("getQuantity")
+    @Produces({"application/json"})
+    public Response getItemQuantity(@QueryParam("storeID") Long storeID, @QueryParam("SKU") String SKU) {
+        try {
+
+            ProductDB product = new ProductDB();
+            Response res = product.checkAvailability(SKU, storeID);
+            if (res.getStatus() == 200) {
+                System.out.println("pass");
+                return Response.ok(MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @Override

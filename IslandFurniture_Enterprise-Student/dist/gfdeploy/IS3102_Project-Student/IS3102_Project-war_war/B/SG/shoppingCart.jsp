@@ -7,31 +7,58 @@
 <%@page import="EntityManager.RetailProductEntity"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <jsp:include page="checkCountry.jsp" />
-
-<html> 
+<!--###-->
+<html> <!--<![endif]-->
     <jsp:include page="header.html" />
     <body>
-        <script>
+        <%
             double finalPrice = 0.0;
+        %>
+        <script>
             var totalPrice = 0;
-            
-    
             for (var i = 0, n = shoppingCart.getItems().size; i < n; i++) {
-                totalPrice += shoppingCart.getItems().get(i).get
+                totalPrice += shoppingCart.getItems().get(i).get();
             }
-            
-            function numOfItem(String SKU){
-                int occurrences = Collections.frequency(shoppingCart, SKU);
-                return occurrences;
+            function removeItem() {
+                checkboxes = document.getElementsByName('delete');
+                var numOfTicks = 0;
+                for (var i = 0, n = checkboxes.length; i < n; i++) {
+                    if (checkboxes[i].checked) {
+                        numOfTicks++;
+                    }
+                }
+                if (checkboxes.length == 0 || numOfTicks == 0) {
+                    window.event.returnValue = true;
+                    document.shoppingCart.action = "/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=No item(s) selected for deletion.";
+                    document.shoppingCart.submit();
+                } else {
+                    window.event.returnValue = true;
+                    document.shoppingCart.action = "../../ECommerce_RemoveItemFromListServlet";
+                    document.shoppingCart.submit();
+                }
             }
-            
             function checkAll(source) {
                 checkboxes = document.getElementsByName('delete');
                 for (var i = 0, n = checkboxes.length; i < n; i++) {
                     checkboxes[i].checked = source.checked;
                 }
             }
-
+            function minus(SKU) {
+                window.event.returnValue = true;
+                document.shoppingCart.action = "../../ECommerce_MinusFurnitureToListServlet?SKU=" + SKU;
+                document.shoppingCart.submit();
+            }
+            function plus(SKU, name, price, imageURL) {
+                window.event.returnValue = true;
+                document.shoppingCart.action = "../../ECommerce_AddFurnitureToListServlet?SKU=" + SKU + "&price=" + price + "&name=" + name + "&imageURL=" + imageURL;
+                document.shoppingCart.submit();
+            }
+            function finalTotalPrice() {
+                checkboxes = document.getElementsById('totalPrice');
+                for (var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            }
             function checkOut() {
                 $(".plus").prop("disabled", true);
                 $(".minus").prop("disabled", true);
@@ -42,11 +69,46 @@
                 $("#makePaymentForm").show("slow", function () {
                 });
             }
+            
             function makePayment() {
                 window.event.returnValue = true;
-                document.makePaymentForm.action = "../../ECommerce_PaymentServlet";
-                document.makePaymentForm.submit();
+                cardName = $('#txtName').val();
+                cardNo = $('#txtCardNo').val();
+                securityCode = $('#txtSecuritycode').val();
+                year = $('#year').val();
+                var numbers = /^[0-9]+$/;
+                if (cardName.trim() == "") {
+                    alert("Please fill in the Name on the card!");
+                } else if (cardNo.trim() == "") {
+                    alert("Please fill in the card number!");
+                } else if (securityCode.trim() == "") {
+                    alert("Please fill in the securityCode!");
+                } else if (year.trim() == "") {
+                    alert("Please fill in the expire year of the card!");
+                } else if (!securityCode.match(numbers) || securityCode.length != 3){
+                    alert("Please provide valid security code!");
+                } else if (!year.match(numbers) || year.length != 4 || year < 2020){
+                    alert("Please provide valid expiry year!");
+                } else if (!cardNo.match(numbers)){
+                    alert("Card number cannot contain letters!");
+                } 
+                else if (cardNo.match(numbers)){
+                    var creditcardInt = [];
+                    for (var i = 0; i < cardNo.length; i++) {
+                        creditcardInt[i] = parseInt(cardNo.substring(i, i + 1), 10);
+                    }
+                    if (creditcardInt.length < 16) {
+                        //the card number is valid
+                        alert("The card number is not valid!");
+                    }
+                    else{
+                        document.makePaymentForm.action = "../../ECommerce_PaymentServlet";
+                        document.makePaymentForm.submit();
+                    }
+                }
             }
+            
+            
         </script>
 
         <div class="body">
@@ -97,10 +159,12 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <%ArrayList<ShoppingCartLineItem> shoppingCart = (ArrayList<ShoppingCartLineItem>) (session.getAttribute("shoppingCart"));
+                                                        <%
+                                                            ArrayList<ShoppingCartLineItem> myCart = (ArrayList<ShoppingCartLineItem>) (session.getAttribute("myCart"));
                                                             try {
-                                                                if (shoppingCart != null && shoppingCart.size() > 0) {
-                                                                    for (ShoppingCartLineItem item : shoppingCart) {
+                                                                if (myCart != null && myCart.size() > 0) {
+                                                                    for (ShoppingCartLineItem item : myCart) {
+                                                                        finalPrice += item.getPrice() * item.getQuantity();
                                                         %>
                                                         <tr class="cart_table_item">
                                                             <td class="product-remove">
@@ -120,18 +184,6 @@
                                                                 </span>
                                                             </td>
                                                             <td class="product-quantity">
-                                                                <script>
-                                                                    function minus(SKU) {
-                                                                        window.event.returnValue = true;
-                                                                        document.shoppingCart.action = "../../ECommerce_MinusFurnitureToListServlet?SKU=" + SKU;
-                                                                        document.shoppingCart.submit();
-                                                                    }
-                                                                    function plus(SKU, name, price, imageURL) {
-                                                                        window.event.returnValue = true;
-                                                                        document.shoppingCart.action = "../../ECommerce_AddFurnitureToListServlet?SKU=" + SKU + "&price=" + price + "&name=" + name + "&imageURL=" + imageURL;
-                                                                        document.shoppingCart.submit();
-                                                                    }
-                                                                </script>
                                                                 <form enctype="multipart/form-data" method="post" class="cart">
                                                                     <div class="quantity">
                                                                         <input type="button" class="minus" value="-" onclick="minus('<%=item.getSKU()%>')">
@@ -142,12 +194,13 @@
                                                             </td>
                                                             <td class="product-subtotal">
                                                                 $<span class="amount" id="totalPrice<%=item.getSKU()%>">
-                                                                    insert total price here
+                                                                    <%=item.getQuantity() * item.getPrice()%>
+
                                                                 </span>
                                                             </td>
                                                         </tr>
-                                                        <%          }//end of for loop
-                                                                }//end of if
+                                                        <%       }                                                          //   }
+                                                                }
                                                             } catch (Exception ex) {
                                                                 System.out.println(ex);
                                                             }
@@ -158,28 +211,19 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td class="product-subtotal" style="font-weight: bold">
-                                                                Total: 
-                                                            </td>
-                                                            <script>
-                                                                function finalTotalPrice() {
-                                                                    checkboxes = document.getElementsById('totalPrice');
-                                                                    for (var i = 0, n = checkboxes.length; i < n; i++) {
-                                                                        checkboxes[i].checked = source.checked;
-                                                                    }
-                                                                }
-                                                            </script>
-                                                            <td class="product-subtotal">
-                                                                $<span class="amount" id="finalPrice" name="finalPrice" value="">
 
+                                                            </td>
+                                                            <td class="product-subtotal">
+                                                                $<span class="amount" id="finalPrice" name="finalPrice">
+                                                                    Total: <%=finalPrice%>
                                                                 </span>
                                                             </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                <%if (shoppingCart != null && shoppingCart.size() > 0) {%>
+                                                <%if (myCart != null && myCart.size() > 0) {%>
                                                 <div align="left"><a href="#myModal" data-toggle="modal"><button id="btnRemove" class="btn btn-primary">Remove Item(s)</button></a></div>
                                                 <div align="right"><a href="#checkoutModal" data-toggle="modal"><button id="btnCheckout" class="btn btn-primary btn-lg">Check Out</button></a></div>
-
                                                 <%} else {%>
                                                 <div align="right"><a href="#checkoutModal" data-toggle="modal"><button disabled="true" id="btnCheckout" class="btn btn-primary btn-lg">Check Out</button></a></div>
                                                 <%}%>
@@ -207,7 +251,7 @@
                                                                 <label>Card Number: </label>
                                                             </td>
                                                             <td style="padding: 5px">
-                                                                <input type="text" class="input-text text " title="cardno" id="txtCardNo" required>
+                                                                <input type="text" class="input-text text " title="cardno" name="card" id="txtCardNo" required>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -269,28 +313,8 @@
                         <div class="modal-body">
                             <p id="messageBox">The selected item(s) will be removed from your shopping cart. Are you sure you want to continue?</p>
                         </div>
-                        <script>
-                            function removeItems() {
-                                checkboxes = document.getElementsByName('delete');
-                                var numOfTicks = 0;
-                                for (var i = 0, n = checkboxes.length; i < n; i++) {
-                                    if (checkboxes[i].checked) {
-                                        numOfTicks++;
-                                    }
-                                }
-                                if (checkboxes.length == 0 || numOfTicks == 0) {
-                                    window.event.returnValue = true;
-                                    document.shoppingCart.action = "/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=No item(s) selected for deletion.";
-                                    document.shoppingCart.submit();
-                                } else {
-                                    window.event.returnValue = true;
-                                    document.shoppingCart.action = "../../ECommerce_RemoveItemFromListServlet";
-                                    document.shoppingCart.submit();
-                                }
-                            }
-                        </script>
                         <div class="modal-footer">                        
-                            <input class="btn btn-primary" name="btnRemove" type="submit" value="Confirm" onclick="removeItems()"/>
+                            <input class="btn btn-primary" name="btnRemove" type="submit" value="Confirm" onclick="removeItem()"  />
                             <a class="btn btn-default" data-dismiss ="modal">Close</a>
                         </div>
                     </div>
@@ -306,8 +330,8 @@
                             <p id="messageBox">Please check the cart items before checkout. Are you sure you want to continue?</p>
                         </div>
                         <div class="modal-footer">                        
-                            <input class="btn btn-primary" data-dismiss ="modal" name="btnCheckout" type="button" value="Confirm" onclick="checkOut()"  />
-                            <a class="btn btn-default" data-dismiss ="modal">Close</a>
+                            <input class="btn btn-primary" data-dismiss="modal" name="btnCheckout" type="button" value="Confirm" onclick="checkOut()">
+                            <a class="btn btn-default" data-dismiss="modal">Close</a>
                         </div>
                     </div>
                 </div>
